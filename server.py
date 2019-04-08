@@ -43,9 +43,8 @@ DATABASEURI = "postgresql://user:password@104.196.18.7/w4111"
 engine = create_engine(DATABASEURI, isolation_level="AUTOCOMMIT")
 if not database_exists(engine.url):
     create_database(engine.url)
-    engine.execute(open("Tables.sql", "r").read())
-    engine.execute(open("Insert_Maruthi.sql", "r").read())
-    engine.execute(open("Insert_Sky.sql", "r").read())
+    engine.execute(open("tables.sql", "r").read())
+    engine.execute(open("data.sql", "r").read())
     print True
 #
 # Example of running queries in your database
