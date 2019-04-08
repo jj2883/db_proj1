@@ -40,17 +40,17 @@ DATABASEURI = "postgresql://user:password@104.196.18.7/w4111"
 #
 # This line creates a database engine that knows how to connect to the URI above.
 #
-engine = create_engine(DATABASEURI)
-
+engine = create_engine(DATABASEURI, isolation_level="AUTOCOMMIT")
+if not database_exists(engine.url):
+    create_database(engine.url)
+    engine.execute(open("Tables.sql", "r").read())
+    engine.execute(open("Insert_Maruthi.sql", "r").read())
+    engine.execute(open("Insert_Sky.sql", "r").read())
+    print True
 #
 # Example of running queries in your database
 # Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
 #
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
 
 
 @app.before_request
@@ -113,7 +113,7 @@ def index():
   #
   # example of a database query
   #
-  cursor = g.conn.execute("SELECT name FROM test")
+  cursor = g.conn.execute("SELECT team_name FROM TEAM")
   names = []
   for result in cursor:
     names.append(result['name'])  # can also be accessed using result[0]
