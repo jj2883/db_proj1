@@ -60,7 +60,7 @@ FOREIGN KEY(player_id) REFERENCES PLAYER
 
 
 
-CREATE TABLE Coaches(
+CREATE TABLE Coaches_(
 coach_id INTEGER,
 team_id INTEGER,
 contract_start_date DATE,
@@ -72,7 +72,7 @@ FOREIGN KEY(team_id) REFERENCES TEAM
 );
 
 
-CREATE TABLE Play(
+CREATE TABLE Play_(
 home_team_id INTEGER,
 away_team_id INTEGER,
 game_id INTEGER,
@@ -82,7 +82,7 @@ FOREIGN KEY(home_team_id) REFERENCES TEAM,
 FOREIGN KEY(away_team_id) REFERENCES TEAM
 );
 
-CREATE TABLE Play_for(
+CREATE TABLE Play_for_(
 player_id INTEGER,
 team_id INTEGER,
 contract_start_date DATE,
@@ -93,7 +93,7 @@ FOREIGN KEY(player_id) REFERENCES PLAYER,
 FOREIGN KEY(team_id) REFERENCES TEAM
 );
 
-CREATE TABLE Record(
+CREATE TABLE Record_(
 player_id INTEGER,
 game_id INTEGER,
 PRIMARY KEY(player_id, game_id),
