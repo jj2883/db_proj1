@@ -1,4 +1,5 @@
-DROP TABLE TEAM, PLAYER, COACH, GAME, STATLINE, Coaches_, Play_,Play_for_, Record_;
+DROP TABLE  Coaches_, Play_,Play_for_, Record_,TEAM, PLAYER, COACH, GAME, STATLINE CASCADE;
+
 
 CREATE TABLE TEAM(
 team_id INTEGER,
