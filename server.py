@@ -159,25 +159,111 @@ def index():
   #
   return render_template("index.html", **context)
 
-#
-# This is an example of a different path.  You can see it at:
-# 
-#     localhost:8111/another
-#
-# Notice that the function name is another() rather than index()
-# The functions for each app.route need to have different names
-#
-@app.route('/another')
-def another():
-  return render_template("another.html")
 
 
-# Example of adding new data to the database
-@app.route('/add', methods=['POST'])
-def add():
-  name = request.form['name']
-  g.conn.execute('INSERT INTO test VALUES (NULL, ?)', name)
-  return redirect('/')
+class List_Search(MethodView):
+
+    # methods = ['GET', 'POST']
+
+    # def dispatch_request(self, name):
+    #     return 'Hello %s!' % name
+
+    def get(self, name):
+        if request.method != 'POST':
+            '''
+            # Get table fields
+            field_query = "SELECT column_name FROM information_schema.columns WHERE table_name = %s;"
+            cursor_field = g.conn.execute(field_query, (name,))
+            fields = []
+            for field in cursor_field:
+                fields.append(field)
+            cursor_field.close()
+            '''
+            # http://stackoverflow.com/questions/13793399/passing-table-name-as-a-parameter-in-psycopg2
+            # Get table entries
+            query = "SELECT * FROM %(table)s;"
+            cursor = g.conn.execute(query, {"table": AsIs(name)})
+            table = []
+            for cells in cursor:
+                table.append(cells)
+            # Get table fields, http://docs.sqlalchemy.org/en/latest/core/connections.html#sqlalchemy.engine.ResultProxy
+            fields = cursor.keys()
+            # Format fields correctly
+            fields = [(f,) for f in fields]
+            cursor.close()
+            table = sorted(table)
+            context = dict(t_name=str(name), table=table, fields=fields)
+            if '_' not in name:
+                return render_template("entities.html", **context)
+            else:
+                return render_template("relations.html", **context)
+
+    def post(self, name):
+        # print name
+        search = request.form['search']
+        search_ph = search + '%%'
+        name = name.lower()
+        # print search
+        if name == 'team':
+            # Need %% to escape %
+            query = "SELECT * FROM team t LIKE %s;"
+            #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND al.al_name LIKE %s;"
+            # print query
+            cursor = g.conn.execute(query, (search_ph,))
+        elif name == 'player':
+            query = "SELECT * FROM playerr p  LIKE %s;"
+            #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
+            # print query
+            cursor = g.conn.execute(query, (search_ph,))
+        # elif name == 'song':
+        #     query = "SELECT * FROM artist a, song s, (select a_id, s_id from contributes_to) c WHERE a.a_id = c.a_id AND s.s_id = c.s_id AND s.s_name LIKE %s;"
+        #     # print query
+        #     cursor = g.conn.execute(query, (search_ph,))
+        # elif name == 'genre':
+        #     query = "SELECT * FROM song s, genre g, belongs_to b WHERE s.s_id = b.s_id AND b.g_id = g.g_id AND g.g_name LIKE %s;"
+        #     # print query
+        #     cursor = g.conn.execute(query, (search_ph,))
+        # elif name == 'label':
+        #     query = "SELECT * FROM artist a, label l, has_signed h WHERE a.a_id = h.a_id AND l.l_id = h.l_id AND l.l_name LIKE %s;"
+        #     # print query
+        #     cursor = g.conn.execute(query, (search_ph,))
+        # elif name == 'playlist':
+        #     query = "SELECT * FROM playlist p, contains_ c, song s WHERE p.p_id = c.p_id AND c.s_id = s.s_id AND p.p_name LIKE %s;"
+        #     # print query
+        #     cursor = g.conn.execute(query, (search_ph,))
+        # else:
+        #     query = "SELECT * FROM artist a, performs_at p, concert c WHERE p.a_id = a.a_id AND p.c_id = c.c_id AND c.c_name LIKE %s;"
+        #     # print query
+        #     cursor = g.conn.execute(query, (search_ph,))
+        # Get fields
+        _fields = cursor.keys()
+        # print _fields
+        # Get unique set of fields
+        # fields = sorted(list(set(_fields))) not used as order is not maintained
+        fields = []
+        for x in _fields:
+            if x not in fields:
+                fields.append(x)
+        # print fields
+        output = []
+        for result in cursor:
+            row = ()
+            for f in fields:
+                # print result[f]
+                row += (result[f],)
+            output.append(row)
+        output = sorted(output)
+        # Format fields correctly, but only after to prevent type issues
+        fields = [(f,) for f in fields]
+        cursor.close()
+        context = dict(search=str(search), t_name=str(name).title(), table=output, fields=fields)
+        return render_template("search.html", **context)
+
+
+ListSearch_View = List_Search.as_view('List_Table')
+# Can always use defaults={'search': None} as a arg if need be
+app.add_url_rule('/<name>', view_func=ListSearch_View)
+app.add_url_rule('/<name>/search', view_func=ListSearch_View)
 
 
 @app.route('/login')
@@ -187,29 +273,80 @@ def login():
 
 
 if __name__ == "__main__":
-  import click
+    import click
 
-  @click.command()
-  @click.option('--debug', is_flag=True)
-  @click.option('--threaded', is_flag=True)
-  @click.argument('HOST', default='0.0.0.0')
-  @click.argument('PORT', default=8111, type=int)
-  def run(debug, threaded, host, port):
-    """
-    This function handles command line parameters.
-    Run the server using:
+    @click.command()
+    @click.option('--debug', is_flag=True)
+    @click.option('--threaded', is_flag=True)
+    @click.argument('HOST', default='0.0.0.0')
+    @click.argument('PORT', default=8111, type=int)
+    def run(debug, threaded, host, port):
+      """
+      This function handles command line parameters.
+      Run the server using
+          python server.py
+      Show the help text using
+          python server.py --help
+      """
 
-        python server.py
-
-    Show the help text using:
-
-        python server.py --help
-
-    """
-
-    HOST, PORT = host, port
-    print "running on %s:%d" % (HOST, PORT)
-    app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
+      HOST, PORT = host, port
+      print "running on %s:%d" % (HOST, PORT)
+      app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
 
 
-  run()
+    run()
+
+# #
+# # This is an example of a different path.  You can see it at:
+# # 
+# #     localhost:8111/another
+# #
+# # Notice that the function name is another() rather than index()
+# # The functions for each app.route need to have different names
+# #
+# @app.route('/another')
+# def another():
+#   return render_template("another.html")
+
+
+# # Example of adding new data to the database
+# @app.route('/add', methods=['POST'])
+# def add():
+#   name = request.form['name']
+#   g.conn.execute('INSERT INTO test VALUES (NULL, ?)', name)
+#   return redirect('/')
+
+
+# @app.route('/login')
+# def login():
+#     abort(401)
+#     this_is_never_executed()
+
+
+# if __name__ == "__main__":
+#   import click
+
+#   @click.command()
+#   @click.option('--debug', is_flag=True)
+#   @click.option('--threaded', is_flag=True)
+#   @click.argument('HOST', default='0.0.0.0')
+#   @click.argument('PORT', default=8111, type=int)
+#   def run(debug, threaded, host, port):
+#     """
+#     This function handles command line parameters.
+#     Run the server using:
+
+#         python server.py
+
+#     Show the help text using:
+
+#         python server.py --help
+
+#     """
+
+#     HOST, PORT = host, port
+#     print "running on %s:%d" % (HOST, PORT)
+#     app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
+
+
+#   run()
