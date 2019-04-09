@@ -1,12 +1,4 @@
 
-CREATE TABLE Record(
-player_id INTEGER,
-game_id INTEGER,
-PRIMARY KEY(player_id, game_id),
-FOREIGN KEY(player_id) REFERENCES PLAYER,
-FOREIGN KEY(game_id) REFERENCES GAME
-);
-
 
 INSERT INTO TEAM VALUES(1, 'Bulls', 'East');
 INSERT INTO TEAM VALUES(2, 'Nets', 'East');

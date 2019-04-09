@@ -1,7 +1,4 @@
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
-GRANT ALL ON SCHEMA public TO postgres;
-GRANT ALL ON SCHEMA public TO public;
+DROP TABLE TEAM, PLAYER, COACH, GAME, STATLINE, Coaches_, Play_,Play_for_, Record_;
 
 CREATE TABLE TEAM(
 team_id INTEGER,
