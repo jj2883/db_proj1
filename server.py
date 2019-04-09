@@ -45,10 +45,15 @@ DATABASEURI = "postgresql://jj2883:2360@34.73.21.127/proj1part2"
 # This line creates a database engine that knows how to connect to the URI above.
 #
 engine = create_engine(DATABASEURI, isolation_level="AUTOCOMMIT")
-if not database_exists(engine.url):
-    create_database(engine.url)
-    engine.execute(open("tables.sql", "r").read())
-    engine.execute(open("data.sql", "r").read())
+#if not database_exists(engine.url):
+#    create_database(engine.url)
+#    engine.execute(open("tables.sql", "r").read())
+#   engine.execute(open("data.sql", "r").read())
+
+engine.execute(open("tables.sql", "r").read())
+engine.execute(open("data.sql", "r").read())
+
+
 #    print True
 #
 # Example of running queries in your database
@@ -123,8 +128,8 @@ def index():
 
     #entities = [i for i in names_ if '_' not in i]
     # relations = [i for i in names_ if '_' in i]
-    entities = ['Team', 'Player', ' Coach', 'Game', 'Statline']
-    entities = sorted(entities)
+    #entities = ['Team', 'Player', ' Coach', 'Game', 'Statline']
+    #entities = sorted(entities)
   cursor.close()
 
   #
@@ -205,15 +210,15 @@ class List_Search(MethodView):
         # print name
         search = request.form['search']
         search_ph = search + '%%'
-        name = name.lower()
+        name = name.upper()
         # print search
-        if name == 'team':
+        if name == 'TEAM':
             # Need %% to escape %
             query = "SELECT * FROM team t;"
             #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND al.al_name LIKE %s;"
             # print query
             cursor = g.conn.execute(query, (search_ph,))
-        elif name == 'player':
+        elif name == 'PLAYER':
             query = "SELECT * FROM player p;"
             #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
             # print query
