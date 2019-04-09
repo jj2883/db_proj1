@@ -1,8 +1,6 @@
-DROP SCHEMA public CASCADE;
-CREATE SCHEMA public;
 
-/*DROP TABLE  Coaches_, Play_,Play_for_, Record_,TEAM, PLAYER, COACH, GAME, STATLINE CASCADE;
-*/
+DROP TABLE  Coaches_, Play_,Play_for_, Record_,TEAM, PLAYER, COACH, GAME, STATLINE CASCADE;
+
 
 
 CREATE TABLE TEAM(
