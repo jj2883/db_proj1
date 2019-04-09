@@ -19,6 +19,7 @@ from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
 from sqlalchemy_utils import database_exists, create_database
+from flask.views import MethodView
 
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -36,7 +37,8 @@ app = Flask(__name__, template_folder=tmpl_dir)
 #
 #     DATABASEURI = "postgresql://biliris:foobar@104.196.18.7/w4111"
 #
-DATABASEURI = "postgresql://jad2267:jj2883@34.73.21.127/proj1part2"
+#DATABASEURI = "postgresql://jad2267:jj2883@34.73.21.127/proj1part2"
+DATABASEURI = "postgresql://jj2883:2360@34.73.21.127/proj1part2"
 
 
 #
@@ -119,8 +121,9 @@ def index():
   for result in cursor:
     names.append(result[0])  # can also be accessed using result[0]
 
-    entities = [i for i in names_ if '_' not in i]
+    #entities = [i for i in names_ if '_' not in i]
     # relations = [i for i in names_ if '_' in i]
+    entities = ['Team', 'Player', ' Coach', 'Game', 'Statline']
     entities = sorted(entities)
   cursor.close()
 
@@ -206,12 +209,12 @@ class List_Search(MethodView):
         # print search
         if name == 'team':
             # Need %% to escape %
-            query = "SELECT * FROM team t LIKE %s;"
+            query = "SELECT * FROM team t;"
             #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND al.al_name LIKE %s;"
             # print query
             cursor = g.conn.execute(query, (search_ph,))
         elif name == 'player':
-            query = "SELECT * FROM playerr p  LIKE %s;"
+            query = "SELECT * FROM player p;"
             #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
             # print query
             cursor = g.conn.execute(query, (search_ph,))
