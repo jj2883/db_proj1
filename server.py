@@ -18,6 +18,8 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
+from sqlalchemy_utils import database_exists, create_database
+
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -34,7 +36,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 #
 #     DATABASEURI = "postgresql://biliris:foobar@104.196.18.7/w4111"
 #
-DATABASEURI = "postgresql://user:password@104.196.18.7/w4111"
+DATABASEURI = "postgresql://jad2267:jj2883@34.73.21.127/proj1part2"
 
 
 #
@@ -45,7 +47,7 @@ if not database_exists(engine.url):
     create_database(engine.url)
     engine.execute(open("tables.sql", "r").read())
     engine.execute(open("data.sql", "r").read())
-    print True
+#    print True
 #
 # Example of running queries in your database
 # Note that this will probably not work if you already have a table named 'test' in your database, containing meaningful data. This is only an example showing you how to run queries in your database using SQLAlchemy.
@@ -106,16 +108,20 @@ def index():
   """
 
   # DEBUG: this is debugging code to see what request looks like
-  print request.args
+  #print request.args
 
 
   #
   # example of a database query
   #
-  cursor = g.conn.execute("SELECT team_name FROM TEAM")
+  cursor = g.conn.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE';")
   names = []
   for result in cursor:
-    names.append(result['name'])  # can also be accessed using result[0]
+    names.append(result[0])  # can also be accessed using result[0]
+
+    entities = [i for i in names_ if '_' not in i]
+    # relations = [i for i in names_ if '_' in i]
+    entities = sorted(entities)
   cursor.close()
 
   #
@@ -144,7 +150,7 @@ def index():
   #     <div>{{n}}</div>
   #     {% endfor %}
   #
-  context = dict(data = names)
+  context = dict(entities = entities)
 
 
   #
