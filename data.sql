@@ -42,29 +42,6 @@ INSERT INTO GAME VALUES(25,5,1,70,102);
 
 
 
-CREATE TABLE STATLINE(
-game_id INTEGER,
-minutes_played INTEGER, 
-field_goals INTEGER,
-field_goals_attempted INTEGER,
-three_pointers INTEGER,
-three_pointers_attempted INTEGER,
-free_throws INTEGER,
-free_throws_attempted INTEGER,
-offensive_rebounds INTEGER,
-defensive_rebounds INTEGER,
-assists INTEGER,
-steals INTEGER,
-blocks INTEGER,
-turnovers INTEGER,
-personal_fouls INTEGER,
-points INTEGER,
-player_id INTEGER,
-PRIMARY KEY(game_id, player_id),
-FOREIGN KEY(game_id) REFERENCES GAME,
-FOREIGN KEY(player_id) REFERENCES PLAYER
-);
-
 
 
 

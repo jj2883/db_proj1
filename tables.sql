@@ -1,3 +1,8 @@
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO public;
+
 CREATE TABLE TEAM(
 team_id INTEGER,
 team_name CHAR(20) UNIQUE,
