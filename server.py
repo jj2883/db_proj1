@@ -83,94 +83,94 @@ def index():
 
 
 
-class mySearch(MethodView):
+# class mySearch(MethodView):
 
-    def get(self, name):
-        if request.method != 'POST':
+#     def get(self, name):
+#         if request.method != 'POST':
   
-            # http://stackoverflow.com/questions/13793399/passing-table-name-as-a-parameter-in-psycopg2
-            # Get table entries
-            query = "SELECT * FROM %(table)s;"
-            cursor = g.conn.execute(query, {"table": AsIs(name)})
-            table = []
-            for n in cursor:
-                table.append(n)
+#             # http://stackoverflow.com/questions/13793399/passing-table-name-as-a-parameter-in-psycopg2
+#             # Get table entries
+#             query = "SELECT * FROM %(table)s;"
+#             cursor = g.conn.execute(query, {"table": AsIs(name)})
+#             table = []
+#             for n in cursor:
+#                 table.append(n)
 
 
-            #http://docs.sqlalchemy.org/en/latest/core/connections.html#sqlalchemy.engine.ResultProxy
-            title = cursor.keys()
+#             #http://docs.sqlalchemy.org/en/latest/core/connections.html#sqlalchemy.engine.ResultProxy
+#             title = cursor.keys()
 
-            # Format fields correctly
-            title = [(t,) for t in title]
+#             # Format fields correctly
+#             title = [(t,) for t in title]
 
-            cursor.close()
-        # title = [(t,) for t in title]
+#             cursor.close()
+#         # title = [(t,) for t in title]
 
-            # cursor.close()
+#             # cursor.close()
 
-            # table = sorted(table)
-            table = sorted(table)
+#             # table = sorted(table)
+#             table = sorted(table)
 
-            context = dict(t_name=str(name), table=table, fields=fields)
-            if '_' not in name:
-                return render_template("entities.html", **context)
-            else:
-                return render_template("relations.html", **context)
+#             context = dict(t_name=str(name), table=table, fields=fields)
+#             if '_' not in name:
+#                 return render_template("entities.html", **context)
+#             else:
+#                 return render_template("relations.html", **context)
 
 
-    def post(self, name):
-        # print name
-        #user input
-        search = request.form['search']
-        search_ph = search + '%%'
-        name = name.lower()
-        # print search
-        if name == 'player':
-            # Need %% to escape %
-            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
-            #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND al.al_name LIKE %s;"
-            # query = "SELECT * FROM artist a, album al, contributes_to c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name = VALUES(%s);"
-            # print query
-#            cursor = g.conn.execute(query, (search_ph,))
-            cursor = g.conn.execute(query)
-        elif name == 'team':
-            query = "SELECT * FROM player p, game g, coach c, team t,(select * from coaches_ ) co, (select * from play_for_)pf, (select * from play_)pl where p.player_id=t.player_id AND pl.home_team_id=t.team_id and pl.away_team_id=t.team_id and co.team_id = t.team_id;"
-            #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
-            # print query
-            cursor = g.conn.execute(query, (search_ph,))
-        elif name == 'statline':
-#            query = "SELECT * FROM artist a, song s, (select a_id, s_id from contributes_to) c WHERE a.a_id = c.a_id AND s.s_id = c.s_id AND s.s_name LIKE %s;"
-            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
-            # print query
-            cursor = g.conn.execute(query, (search_ph,))
-        elif name == 'game':
-            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
-#            query = "SELECT * FROM song s, genre g, belongs_to b WHERE s.s_id = b.s_id AND b.g_id = g.g_id AND g.g_name LIKE %s;"
-            # print query
-            cursor = g.conn.execute(query, (search_ph,))
-        # Get fields
-        _fields = cursor.keys()
-        # print _fields
-        # Get unique set of fields
-        # fields = sorted(list(set(_fields))) not used as order is not maintained
-        fields = []
-        for x in _fields:
-            if x not in fields:
-                fields.append(x)
-        # print fields
-        output = []
-        for result in cursor:
-            row = ()
-            for f in fields:
-                # print result[f]
-                row += (result[f],)
-            output.append(row)
-        output = sorted(output)
-        # Format fields correctly, but only after to prevent type issues
-        fields = [(f,) for f in fields]
-        cursor.close()
-        context = dict(search=str(search), t_name=str(name).title(), table=output, fields=fields)
-        return render_template("search.html", **context)
+#     def post(self, name):
+#         # print name
+#         #user input
+#         search = request.form['search']
+#         search_ph = search + '%%'
+#         name = name.lower()
+#         # print search
+#         if name == 'player':
+#             # Need %% to escape %
+#             query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
+#             #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND al.al_name LIKE %s;"
+#             # query = "SELECT * FROM artist a, album al, contributes_to c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name = VALUES(%s);"
+#             # print query
+# #            cursor = g.conn.execute(query, (search_ph,))
+#             cursor = g.conn.execute(query)
+#         elif name == 'team':
+#             query = "SELECT * FROM player p, game g, coach c, team t,(select * from coaches_ ) co, (select * from play_for_)pf, (select * from play_)pl where p.player_id=t.player_id AND pl.home_team_id=t.team_id and pl.away_team_id=t.team_id and co.team_id = t.team_id;"
+#             #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
+#             # print query
+#             cursor = g.conn.execute(query, (search_ph,))
+#         elif name == 'statline':
+# #            query = "SELECT * FROM artist a, song s, (select a_id, s_id from contributes_to) c WHERE a.a_id = c.a_id AND s.s_id = c.s_id AND s.s_name LIKE %s;"
+#             query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
+#             # print query
+#             cursor = g.conn.execute(query, (search_ph,))
+#         elif name == 'game':
+#             query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
+# #            query = "SELECT * FROM song s, genre g, belongs_to b WHERE s.s_id = b.s_id AND b.g_id = g.g_id AND g.g_name LIKE %s;"
+#             # print query
+#             cursor = g.conn.execute(query, (search_ph,))
+#         # Get fields
+#         _fields = cursor.keys()
+#         # print _fields
+#         # Get unique set of fields
+#         # fields = sorted(list(set(_fields))) not used as order is not maintained
+#         fields = []
+#         for x in _fields:
+#             if x not in fields:
+#                 fields.append(x)
+#         # print fields
+#         output = []
+#         for result in cursor:
+#             row = ()
+#             for f in fields:
+#                 # print result[f]
+#                 row += (result[f],)
+#             output.append(row)
+#         output = sorted(output)
+#         # Format fields correctly, but only after to prevent type issues
+#         fields = [(f,) for f in fields]
+#         cursor.close()
+#         context = dict(search=str(search), t_name=str(name).title(), table=output, fields=fields)
+#         return render_template("search.html", **context)
 
 #     def post(self, name):
 #         #print name
@@ -222,10 +222,102 @@ class mySearch(MethodView):
 #         return render_template("search.html", **context)
 
 
-mySearch_view = mySearch.as_view('List_Table')
+class List_Search(MethodView):
+
+    # methods = ['GET', 'POST']
+
+    # def dispatch_request(self, name):
+    #     return 'Hello %s!' % name
+
+    def get(self, name):
+        if request.method != 'POST':
+            '''
+            # Get table fields
+            field_query = "SELECT column_name FROM information_schema.columns WHERE table_name = %s;"
+            cursor_field = g.conn.execute(field_query, (name,))
+            fields = []
+            for field in cursor_field:
+                fields.append(field)
+            cursor_field.close()
+            '''
+            # http://stackoverflow.com/questions/13793399/passing-table-name-as-a-parameter-in-psycopg2
+            # Get table entries
+            query = "SELECT * FROM %(table)s;"
+            cursor = g.conn.execute(query, {"table": AsIs(name)})
+            table = []
+            for cells in cursor:
+                table.append(cells)
+            # Get table fields, http://docs.sqlalchemy.org/en/latest/core/connections.html#sqlalchemy.engine.ResultProxy
+            fields = cursor.keys()
+            # Format fields correctly
+            fields = [(f,) for f in fields]
+            cursor.close()
+            table = sorted(table)
+            context = dict(t_name=str(name), table=table, fields=fields)
+            if '_' not in name:
+                return render_template("entities.html", **context)
+            else:
+                return render_template("relations.html", **context)
+
+    def post(self, name):
+        # print name
+        search = request.form['search']
+        search_ph = search + '%%'
+        name = name.lower()
+        # print search
+        if name == 'player':
+            # Need %% to escape %
+            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
+            #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND al.al_name LIKE %s;"
+            # query = "SELECT * FROM artist a, album al, contributes_to c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name = VALUES(%s);"
+            # print query
+#            cursor = g.conn.execute(query, (search_ph,))
+            cursor = g.conn.execute(query)
+        elif name == 'team':
+            query = "SELECT * FROM player p, game g, coach c, team t,(select * from coaches_ ) co, (select * from play_for_)pf, (select * from play_)pl where p.player_id=t.player_id AND pl.home_team_id=t.team_id and pl.away_team_id=t.team_id and co.team_id = t.team_id;"
+            #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
+            # print query
+            cursor = g.conn.execute(query, (search_ph,))
+        elif name == 'statline':
+#            query = "SELECT * FROM artist a, song s, (select a_id, s_id from contributes_to) c WHERE a.a_id = c.a_id AND s.s_id = c.s_id AND s.s_name LIKE %s;"
+            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
+            # print query
+            cursor = g.conn.execute(query, (search_ph,))
+        elif name == 'game':
+            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
+#            query = "SELECT * FROM song s, genre g, belongs_to b WHERE s.s_id = b.s_id AND b.g_id = g.g_id AND g.g_name LIKE %s;"
+            # print query
+            cursor = g.conn.execute(query, (search_ph,))
+
+        # Get fields
+        _fields = cursor.keys()
+        # print _fields
+        # Get unique set of fields
+        # fields = sorted(list(set(_fields))) not used as order is not maintained
+        fields = []
+        for x in _fields:
+            if x not in fields:
+                fields.append(x)
+        # print fields
+        output = []
+        for result in cursor:
+            row = ()
+            for f in fields:
+                # print result[f]
+                row += (result[f],)
+            output.append(row)
+        output = sorted(output)
+        # Format fields correctly, but only after to prevent type issues
+        fields = [(f,) for f in fields]
+        cursor.close()
+        context = dict(search=str(search), t_name=str(name).title(), table=output, fields=fields)
+        return render_template("search.html", **context)
+
+
+ListSearch_View = List_Search.as_view('List_Table')
 # Can always use defaults={'search': None} as a arg if need be
-app.add_url_rule('/<name>', view_func=mySearch_view)
-app.add_url_rule('/<name>/search', view_func=mySearch_view)
+app.add_url_rule('/<name>', view_func=ListSearch_View)
+app.add_url_rule('/<name>/search', view_func=ListSearch_View)
 
 
 @app.route('/login')
@@ -257,4 +349,3 @@ if __name__ == "__main__":
 
 
     run()
-
