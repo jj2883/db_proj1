@@ -134,15 +134,18 @@ class mySearch(MethodView):
 #            cursor = g.conn.execute(query, (search_ph,))
             cursor = g.conn.execute(query)
         elif name == 'team':
-            query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
+            query = "SELECT * FROM player p, game g, coach c, team t,(select * from coaches_ ) co, (select * from play_for_)pf, (select * from play_)pl where p.player_id=t.player_id AND pl.home_team_id=t.team_id and pl.away_team_id=t.team_id and co.team_id = t.team_id;"
+            #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
             # print query
             cursor = g.conn.execute(query, (search_ph,))
         elif name == 'statline':
-            query = "SELECT * FROM artist a, song s, (select a_id, s_id from contributes_to) c WHERE a.a_id = c.a_id AND s.s_id = c.s_id AND s.s_name LIKE %s;"
+#            query = "SELECT * FROM artist a, song s, (select a_id, s_id from contributes_to) c WHERE a.a_id = c.a_id AND s.s_id = c.s_id AND s.s_name LIKE %s;"
+            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
             # print query
             cursor = g.conn.execute(query, (search_ph,))
         elif name == 'game':
-            query = "SELECT * FROM song s, genre g, belongs_to b WHERE s.s_id = b.s_id AND b.g_id = g.g_id AND g.g_name LIKE %s;"
+            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id pl.game_id AND s.team_id = t.team_id AND s.player_id=p.player_id;"
+#            query = "SELECT * FROM song s, genre g, belongs_to b WHERE s.s_id = b.s_id AND b.g_id = g.g_id AND g.g_name LIKE %s;"
             # print query
             cursor = g.conn.execute(query, (search_ph,))
         # Get fields
