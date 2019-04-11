@@ -129,18 +129,27 @@ class List_Search(MethodView):
         name = name.lower()
         # print search
         if name == 'player':
-        	if search =='team'
-            # Need %% to escape %
-            query = "SELECT player_first_name, player_last_name, team_name, region FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id;"
+        	
 
-            cursor = g.conn.execute(query, (search_ph,))
 #            cursor = g.conn.execute(query)
-			elif search == statline
-            query = "SELECT player_first_name, player_last_name, game_id, minutes_played, field_goals,field_goals_attempted,three_pointers, three_pointers_attempted,free_throws, free_throws_attempted,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,personal_fouls,points, FROM player p, (select * from statline) s where p.player_id = s.player_id;"
+			if search == 'statline':
 
-            cursor = g.conn.execute(query, (search_ph,))
+            	query = "SELECT player_first_name, player_last_name, game_id, minutes_played, field_goals,field_goals_attempted,three_pointers, three_pointers_attempted,free_throws, free_throws_attempted,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,personal_fouls,points FROM player p, (select * from statline) s where p.player_id = s.player_id;"
+
+            	cursor = g.conn.execute(query, (search_ph,))
 
 
+			elif search == 'team':
+
+            	query = "SELECT player_first_name, player_last_name, team_name, region FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id;"
+
+            	cursor = g.conn.execute(query, (search_ph,))
+
+			else:
+
+            	query = "SELECT player_first_name, player_last_name, game_id, {} FROM player p, (select * from statline) s where p.player_id = s.player_id;".format{search}
+
+            	cursor = g.conn.execute(query, (search_ph,))
 
 
         elif name == 'team':
