@@ -129,12 +129,20 @@ class List_Search(MethodView):
         name = name.lower()
         # print search
         if name == 'player':
+        	if search =='team'
             # Need %% to escape %
-            query = "SELECT * FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id like %s;"
-#            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id =pl.game_id AND s.player_id=p.player_id;"
-            # print query
+            query = "SELECT player_first_name, player_last_name, team_name, region FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id;"
+
             cursor = g.conn.execute(query, (search_ph,))
 #            cursor = g.conn.execute(query)
+			elif search == statline
+            query = "SELECT player_first_name, player_last_name, game_id, minutes_played, field_goals,field_goals_attempted,three_pointers, three_pointers_attempted,free_throws, free_throws_attempted,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,personal_fouls,points, FROM player p, (select * from statline) s where p.player_id = s.player_id;"
+
+            cursor = g.conn.execute(query, (search_ph,))
+
+
+
+
         elif name == 'team':
             query = "SELECT * FROM player p, game g, coach c, team t,(select * from coaches_ ) co, (select * from play_for_)pf, (select * from play_)pl where p.player_id=t.player_id AND pl.home_team_id=t.team_id and pl.away_team_id=t.team_id and co.team_id = t.team_id;"
             #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
