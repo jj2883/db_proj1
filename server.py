@@ -166,7 +166,7 @@ class List_Search(MethodView):
 
                 cursor = g.conn.execute(query, (search_ph,))
 
-            elif search == 'game'
+            elif search == 'game':
 
             	query = "SELECT home_team_name, points_home_team, away_team_name, points_away_team FROM game g, (select * from play_) pl where pl.game_id = g.game_id;"
 
