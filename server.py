@@ -189,7 +189,7 @@ class List_Search(MethodView):
 #            cursor = g.conn.execute(query)
             if search == 'player':
 
-            	query = "SELECT p.player_first_name, p.player_last_name, s.game_id, {} FROM player p, (select * from statline) s where p.player_id = s.player_id;"
+            	query = "SELECT p.player_first_name, p.player_last_name, s.game_id, {} FROM player p, game g, (select * from statline) s where s.player_id = p.player_id and s.game_id=g.game_id;"
 
             	cursor = g.conn.execute(query, (search_ph,))
 
