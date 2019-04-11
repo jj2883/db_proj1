@@ -132,41 +132,68 @@ class List_Search(MethodView):
         	
 
 #            cursor = g.conn.execute(query)
-			if search == 'statline':
+            if search == 'statline':
 
-            	query = "SELECT player_first_name, player_last_name, game_id, minutes_played, field_goals,field_goals_attempted,three_pointers, three_pointers_attempted,free_throws, free_throws_attempted,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,personal_fouls,points FROM player p, (select * from statline) s where p.player_id = s.player_id;"
+                query = "SELECT player_first_name, player_last_name, game_id, minutes_played, field_goals,field_goals_attempted,three_pointers, three_pointers_attempted,free_throws, free_throws_attempted,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,personal_fouls,points FROM player p, (select * from statline) s where p.player_id = s.player_id;"
+                cursor = g.conn.execute(query, (search_ph,))
 
-            	cursor = g.conn.execute(query, (search_ph,))
 
+            elif search == 'team':
 
-			elif search == 'team':
+                query = "SELECT player_first_name, player_last_name, team_name, region FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id;"
 
-            	query = "SELECT player_first_name, player_last_name, team_name, region FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id;"
+                cursor = g.conn.execute(query, (search_ph,))
 
-            	cursor = g.conn.execute(query, (search_ph,))
+            else:
 
-			else:
-
-            	query = "SELECT player_first_name, player_last_name, game_id, {} FROM player p, (select * from statline) s where p.player_id = s.player_id;".format{search}
+            	query = "SELECT player_first_name, player_last_name, game_id, {} FROM player p, (select * from statline) s where p.player_id = s.player_id;".format(search)
 
             	cursor = g.conn.execute(query, (search_ph,))
 
 
         elif name == 'team':
-            query = "SELECT * FROM player p, game g, coach c, team t,(select * from coaches_ ) co, (select * from play_for_)pf, (select * from play_)pl where p.player_id=t.player_id AND pl.home_team_id=t.team_id and pl.away_team_id=t.team_id and co.team_id = t.team_id;"
-            #query = "SELECT * FROM artist a, album al, (select a_id, al_id from contributes_to) c WHERE a.a_id = c.a_id AND al.al_id = c.al_id AND a.a_name LIKE %s;"
-            # print query
-            cursor = g.conn.execute(query, (search_ph,))
+        	
+
+            if search == 'coach':
+
+                query = "SELECT team_name, coach_first_name, coach_last_name  FROM coach c, team t,(select * from coaches_ ) co where co.team_id = t.team_id and co.coach_id=c.coach_id;"
+                cursor = g.conn.execute(query, (search_ph,))
+
+
+            elif search == 'player':
+
+                query = "SELECT team_name, player_first_name, player_last_name FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id;"
+
+                cursor = g.conn.execute(query, (search_ph,))
+
+            elif search == 'game'
+
+            	query = "SELECT home_team_name, points_home_team, away_team_name, points_away_team FROM game g, (select * from play_) pl where pl.game_id = g.game_id;"
+
+            	cursor = g.conn.execute(query, (search_ph,))
+
+
+
         elif name == 'statline':
-#            query = "SELECT * FROM artist a, song s, (select a_id, s_id from contributes_to) c WHERE a.a_id = c.a_id AND s.s_id = c.s_id AND s.s_name LIKE %s;"
-            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id =pl.game_id AND  s.player_id=p.player_id;"
-            # print query
-            cursor = g.conn.execute(query, (search_ph,))
+
+
+            if search == 'player':
+
+                query = "SELECT player_first_name, player_last_name, game_id, minutes_played, field_goals,field_goals_attempted,three_pointers, three_pointers_attempted,free_throws, free_throws_attempted,offensive_rebounds,defensive_rebounds,assists,steals,blocks,turnovers,personal_fouls,points FROM player p, (select * from statline) s where p.player_id = s.player_id;"
+                cursor = g.conn.execute(query, (search_ph,))
+
+
         elif name == 'game':
-            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id =pl.game_id AND s.player_id=p.player_id;"
-#            query = "SELECT * FROM song s, genre g, belongs_to b WHERE s.s_id = b.s_id AND b.g_id = g.g_id AND g.g_name LIKE %s;"
-            # print query
-            cursor = g.conn.execute(query, (search_ph,))
+        	
+
+#            cursor = g.conn.execute(query)
+            if search == 'player':
+
+            	query = "SELECT player_first_name, player_last_name, game_id, {} FROM player p, (select * from statline) s where p.player_id = s.player_id;"
+
+            	cursor = g.conn.execute(query, (search_ph,))
+
+
 
         # Get fields
         _fields = cursor.keys()
