@@ -140,7 +140,7 @@ class List_Search(MethodView):
 
             elif search == 'team':
 
-                query = "SELECT player_first_name, player_last_name, team_name, region FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id;"
+                query = "SELECT p.player_first_name, p.player_last_name, t.team_name, t.region FROM player p, team t,  (select * from play_for_) pf where pf.player_id = p.player_id AND pf.team_id=t.team_id;"
 
                 cursor = g.conn.execute(query, (search_ph,))
 
@@ -162,7 +162,7 @@ class List_Search(MethodView):
 
             elif search == 'player':
 
-                query = "SELECT team_name, player_first_name, player_last_name FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id;"
+                query = "SELECT t.team_name, p.player_first_name, p.player_last_name FROM player p, team t,  (select * from play_for_) pf where pf.player_id = p.player_id AND pf.team_id=t.team_id;"
 
                 cursor = g.conn.execute(query, (search_ph,))
 
@@ -189,7 +189,7 @@ class List_Search(MethodView):
 #            cursor = g.conn.execute(query)
             if search == 'player':
 
-            	query = "SELECT player_first_name, player_last_name, game_id, {} FROM player p, (select * from statline) s where p.player_id = s.player_id;"
+            	query = "SELECT p.player_first_name, p.player_last_name, s.game_id, {} FROM player p, (select * from statline) s where p.player_id = s.player_id;"
 
             	cursor = g.conn.execute(query, (search_ph,))
 
