@@ -124,13 +124,14 @@ class List_Search(MethodView):
     def post(self, name):
         # print name
         search = request.form['search']
-        search_ph = search + '%%'
+#        search_ph = search + '%%'
+        search_ph = search 
         name = name.lower()
         # print search
         if name == 'player':
             # Need %% to escape %
-#            query = "SELECT * FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id like %s;"
-            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id =pl.game_id AND s.player_id=p.player_id;"
+            query = "SELECT * FROM player p, team t,  (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id like %s;"
+#            query = "SELECT * FROM player p, team t, (select * from play_) pl, (select * from statline) s, (select * from play_for_) pf where p.player_id = pf.player_id AND t.team_id=pf.team_id AND pl.home_team_id=t.team_id AND pl.away_team_id = t.team_id AND s.game_id =pl.game_id AND s.player_id=p.player_id;"
             # print query
             cursor = g.conn.execute(query, (search_ph,))
 #            cursor = g.conn.execute(query)
